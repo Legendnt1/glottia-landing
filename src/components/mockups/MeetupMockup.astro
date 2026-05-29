@@ -1,0 +1,91 @@
+---
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+import Icon from "../Icon.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const m = t.mockups.meetup;
+---
+
+<div class="relative mx-auto w-full max-w-md">
+  <div
+    class="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-accent-soft/60 blur-2xl"
+    aria-hidden="true"
+  >
+  </div>
+
+  <!-- Meetup card -->
+  <div
+    class="rounded-card border border-border bg-surface p-5 shadow-xl shadow-neutral/5"
+  >
+    <div class="flex items-center gap-2 text-[11px] font-semibold">
+      <span class="rounded-pill bg-accent-soft px-2.5 py-1 uppercase tracking-wide text-accent">
+        {m.level}
+      </span>
+      <span class="text-muted">{m.time}</span>
+    </div>
+
+    <h3 class="mt-3 text-xl font-extrabold text-heading">{m.title}</h3>
+    <p class="mt-1 flex items-center gap-1.5 text-sm text-muted">
+      <Icon name="map-pin" class="size-4 text-accent" />
+      {m.meta}
+    </p>
+
+    <div class="mt-5 flex items-center justify-between">
+      <div class="flex -space-x-2">
+        {
+          ["#aadd00", "#7aa300", "#cdee5a"].map((c) => (
+            <span
+              class="size-8 rounded-full border-2 border-surface"
+              style={`background:${c}`}
+            />
+          ))
+        }
+        <span
+          class="flex size-8 items-center justify-center rounded-full border-2 border-dashed border-accent/50 text-accent"
+        >
+          <Icon name="user" class="size-3.5" />
+        </span>
+      </div>
+      <span class="text-xs font-bold text-accent">{m.seats}</span>
+    </div>
+
+    <button
+      type="button"
+      class="mt-5 flex w-full items-center justify-center gap-2 rounded-pill bg-primary py-3 text-sm font-bold text-neutral transition-transform hover:-translate-y-0.5"
+    >
+      {m.joinCta}
+      <Icon name="arrow" class="size-4" />
+    </button>
+  </div>
+
+  <!-- Floating: confirmed level -->
+  <div
+    class="animate-float animate-duration-1000 absolute -right-3 -top-5 flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-xl shadow-neutral/10 sm:-right-6"
+  >
+    <span class="flex size-8 items-center justify-center rounded-xl bg-primary text-neutral">
+      <Icon name="check" class="size-4" />
+    </span>
+    <div>
+      <p class="text-[9px] font-bold uppercase tracking-wider text-muted">
+        {m.floatLevel.tag}
+      </p>
+      <p class="text-xs font-bold text-heading">{m.floatLevel.value}</p>
+    </div>
+  </div>
+
+  <!-- Floating: points -->
+  <div
+    class="animate-float animate-delay-300 animate-duration-1000 absolute -bottom-6 right-6 flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-xl shadow-neutral/10"
+  >
+    <span class="flex size-8 items-center justify-center rounded-xl bg-accent-soft text-accent">
+      <Icon name="star" class="size-4" />
+    </span>
+    <div>
+      <p class="text-[9px] font-bold uppercase tracking-wider text-muted">
+        {m.floatPts.tag}
+      </p>
+      <p class="text-xs font-bold text-heading">{m.floatPts.value}</p>
+    </div>
+  </div>
+</div>

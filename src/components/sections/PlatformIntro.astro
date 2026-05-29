@@ -1,0 +1,40 @@
+---
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const p = t.platform;
+---
+
+<section id="platform" class="scroll-mt-24 px-5 py-20 md:px-8 md:py-28">
+  <div class="mx-auto max-w-3xl text-center">
+    <span
+      class="text-xs font-bold uppercase tracking-[0.2em] text-accent"
+    >
+      {p.eyebrow}
+    </span>
+    <h2
+      class="view-animate-fade-in-up animate-duration-slow mt-4 text-balance text-4xl font-extrabold leading-[1.08] tracking-tight text-heading md:text-5xl"
+    >
+      {p.title}
+    </h2>
+    <p
+      class="view-animate-fade-in-up animate-delay-150 animate-duration-slow mx-auto mt-5 max-w-2xl text-pretty text-base text-body md:text-lg"
+    >
+      {p.subtitle}
+    </p>
+  </div>
+
+  <dl
+    class="mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-4 md:grid-cols-4"
+  >
+    {
+      p.kpis.map((kpi) => (
+        <div class="view-animate-fade-in-up animate-duration-slow rounded-card border border-border bg-surface p-6 text-center transition-colors hover:border-accent/40">
+          <dt class="text-4xl font-extrabold text-accent">{kpi.value}</dt>
+          <dd class="mt-2 text-sm text-muted">{kpi.label}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>

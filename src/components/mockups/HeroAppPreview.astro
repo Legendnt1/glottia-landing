@@ -1,0 +1,112 @@
+---
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+import Icon from "../Icon.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const a = t.heroApp;
+const navIcons = ["home", "users", "sparkles", "user"] as const;
+---
+
+<!-- Static light app screen for the hero phone (real Glottia Home). -->
+<div class="flex h-full flex-col bg-[#f6f7ee] text-neutral">
+  <!-- Status bar -->
+  <div
+    class="flex items-center justify-between px-6 pb-1 pt-3 text-[11px] font-semibold text-neutral/70"
+  >
+    <span>9:41</span>
+    <span class="h-2.5 w-5 rounded-sm border border-neutral/40 px-px">
+      <span class="block h-full w-3/4 rounded-[1px] bg-secondary"></span>
+    </span>
+  </div>
+
+  <!-- Top bar -->
+  <div class="flex items-center gap-2 px-5 pb-1 pt-1">
+    <span class="text-base font-extrabold text-secondary">Glottia</span>
+    <span
+      class="ml-auto flex size-7 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-white"
+      >SM</span
+    >
+  </div>
+
+  <!-- Greeting + score -->
+  <div class="px-5 pt-2">
+    <p class="text-lg font-extrabold">{a.greeting}</p>
+    <div class="mt-2 flex items-center gap-2">
+      <span
+        class="inline-flex items-center gap-1.5 rounded-pill border border-black/10 bg-white px-2.5 py-1 text-[11px] font-semibold"
+      >
+        {a.fluencyLabel}
+        <span class="text-secondary">{a.fluencyValue}</span>
+      </span>
+      <span
+        class="inline-flex items-center gap-1 rounded-pill bg-neutral px-2.5 py-1 text-[11px] font-bold text-white"
+      >
+        <span class="text-primary">★</span>
+        {a.points}
+      </span>
+    </div>
+  </div>
+
+  <!-- Language chips -->
+  <p class="mt-4 px-5 text-[10px] font-bold uppercase tracking-wider text-neutral/40">
+    {a.exploreLabel}
+  </p>
+  <div class="mt-2 flex gap-2 overflow-hidden px-5">
+    {
+      a.langs.map((langName, i) => (
+        <span
+          class:list={[
+            "shrink-0 rounded-pill px-3 py-1.5 text-xs font-semibold",
+            i === 0
+              ? "bg-primary text-neutral"
+              : "border border-black/10 bg-white text-neutral/60",
+          ]}
+        >
+          {langName}
+        </span>
+      ))
+    }
+  </div>
+
+  <!-- Upcoming meetups -->
+  <div class="mt-4 flex items-center justify-between px-5">
+    <p class="text-sm font-bold">{a.upcomingTitle}</p>
+    <span class="text-[11px] font-semibold text-secondary">{a.seeAll}</span>
+  </div>
+  <div class="mt-2 space-y-2.5 px-5">
+    {
+      a.meetups.map((meet) => (
+        <div class="rounded-2xl border border-black/5 bg-white p-3.5 shadow-[0_1px_2px_rgba(20,20,20,0.04)]">
+          <div class="flex items-center gap-2 text-[10px] font-semibold">
+            <span class="rounded-pill bg-[#eef4cf] px-2 py-0.5 text-secondary">
+              {meet.level}
+            </span>
+            <span class="text-neutral/40">{meet.time}</span>
+          </div>
+          <p class="mt-1.5 text-sm font-bold">{meet.title}</p>
+          <p class="mt-0.5 text-[11px] font-medium text-secondary">{meet.seats}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Bottom nav -->
+  <div
+    class="mt-auto flex items-center justify-around border-t border-black/5 px-4 pb-4 pt-3 text-neutral/40"
+  >
+    {
+      a.nav.map((label, i) => (
+        <div
+          class:list={[
+            "flex flex-col items-center gap-1 text-[9px] font-semibold",
+            i === 0 ? "text-secondary" : "",
+          ]}
+        >
+          <Icon name={navIcons[i]} class="size-5" />
+          {label}
+        </div>
+      ))
+    }
+  </div>
+</div>

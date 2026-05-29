@@ -1,0 +1,400 @@
+---
+import "../styles/global.css";
+import {
+  getLangFromUrl,
+  useTranslations,
+  alternatePath,
+  localizePath,
+} from "../utils/i18n";
+import Icon from "../components/Icon.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const { title = t.meta.title, description = t.meta.description } = Astro.props;
+
+const origin = Astro.site ?? Astro.url.origin;
+const canonical = new URL(Astro.url.pathname, origin);
+const ogImage = new URL("/glottia-logo.webp", origin);
+
+const home = localizePath("/", lang);
+const demo = localizePath("/demo", lang);
+const esHref = alternatePath(Astro.url, "es");
+const enHref = alternatePath(Astro.url, "en");
+
+const navLinks = [
+  { label: t.nav.home, href: `${home}#top` },
+  { label: t.nav.benefits, href: `${home}#platform` },
+  { label: t.nav.howItWorks, href: demo },
+];
+
+// Only the canonical English root performs locale auto-detection.
+const isRoot = Astro.url.pathname === "/";
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/webp" href="/glottia-logo.webp" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Theme bootstrap: set .dark before paint to avoid a flash. -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("glottia:theme");
+          var dark =
+            stored === "dark" ||
+            (!stored &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", dark);
+        } catch (e) {}
+      })();
+    </script>
+
+    {
+      isRoot && (
+        <script is:inline>
+          {/* Blocking redirect: send Spanish browsers to /es/ before paint. */}
+          (function () {
+            try {
+              if (sessionStorage.getItem("glottia:lang-routed")) return;
+              sessionStorage.setItem("glottia:lang-routed", "1");
+              var l = (navigator.language || "").toLowerCase();
+              if (l.indexOf("es") === 0) window.location.replace("/es/");
+            } catch (e) {}
+          })();
+        </script>
+      )
+    }
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+
+    <link rel="alternate" hreflang="en" href={new URL("/", canonical).href} />
+    <link rel="alternate" hreflang="es" href={new URL("/es/", canonical).href} />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL("/", canonical).href}
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={lang === "es" ? "es_PE" : "en_US"} />
+    <meta property="og:site_name" content="Glottia" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage.href} />
+
+    <!-- DM Sans via native Google Fonts <link> elements -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-pill focus:bg-primary focus:px-4 focus:py-2 focus:font-semibold focus:text-neutral"
+      >Skip to content</a
+    >
+
+    <header
+      class="sticky top-0 z-50 border-b border-border/70 bg-canvas/80 backdrop-blur-xl"
+    >
+      <nav
+        class="mx-auto flex max-w-6xl items-center gap-4 px-5 py-3.5 md:px-8"
+        aria-label="Primary"
+      >
+        <a
+          href={home}
+          class="flex items-center gap-2.5 font-bold tracking-tight text-heading"
+        >
+          <slot name="logo">
+            <img
+              src="/glottia-logo.webp"
+              alt="Glottia"
+              width="34"
+              height="34"
+              class="size-8"
+            />
+          </slot>
+          <span class="text-lg">Glottia</span>
+        </a>
+
+        <ul
+          class="mx-auto hidden items-center gap-9 text-sm font-medium text-body lg:flex"
+        >
+          {
+            navLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="transition-colors hover:text-accent"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="ml-auto flex items-center gap-2 lg:ml-0">
+          <!-- Language segmented switch (desktop) -->
+          <div
+            class="hidden items-center rounded-pill border border-border p-0.5 text-xs font-semibold lg:flex"
+          >
+            <a
+              href={esHref}
+              hreflang="es"
+              class:list={[
+                "rounded-pill px-2.5 py-1 transition-colors",
+                lang === "es"
+                  ? "bg-neutral text-white"
+                  : "text-muted hover:text-heading",
+              ]}>ES</a
+            >
+            <a
+              href={enHref}
+              hreflang="en"
+              class:list={[
+                "rounded-pill px-2.5 py-1 transition-colors",
+                lang === "en"
+                  ? "bg-neutral text-white"
+                  : "text-muted hover:text-heading",
+              ]}>EN</a
+            >
+          </div>
+
+          <!-- Theme toggle -->
+          <button
+            id="theme-toggle"
+            type="button"
+            class="flex size-9 items-center justify-center rounded-pill border border-border text-heading transition-colors hover:border-accent hover:text-accent"
+            aria-label={t.nav.themeToggle}
+          >
+            <Icon name="moon" class="size-4 dark:hidden" />
+            <Icon name="sun" class="hidden size-4 dark:block" />
+          </button>
+
+          <a
+            href="#"
+            class="hidden rounded-pill border border-border px-4 py-2 text-sm font-semibold text-heading transition-colors hover:border-accent hover:text-accent lg:inline-flex"
+            >{t.nav.login}</a
+          >
+          <a
+            href={demo}
+            class="hidden rounded-pill bg-neutral px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-secondary lg:inline-flex"
+            >{t.nav.requestDemo}</a
+          >
+
+          <!-- Mobile menu toggle -->
+          <button
+            id="menu-toggle"
+            type="button"
+            class="flex size-9 items-center justify-center rounded-pill border border-border text-heading lg:hidden"
+            aria-label="Menu"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+          >
+            <svg
+              class="size-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <line x1="4" x2="20" y1="7" y2="7"></line>
+              <line x1="4" x2="20" y1="12" y2="12"></line>
+              <line x1="4" x2="20" y1="17" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Mobile menu -->
+      <div
+        id="mobile-menu"
+        class="hidden border-t border-border/70 bg-canvas px-5 pb-6 pt-2 lg:hidden"
+      >
+        <ul class="flex flex-col">
+          {
+            navLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="block border-b border-border/60 py-3 font-medium text-body transition-colors hover:text-accent"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="mt-4 flex items-center justify-between gap-3">
+          <div
+            class="inline-flex items-center rounded-pill border border-border p-0.5 text-xs font-semibold"
+          >
+            <a
+              href={esHref}
+              hreflang="es"
+              class:list={[
+                "rounded-pill px-3 py-1.5 transition-colors",
+                lang === "es" ? "bg-neutral text-white" : "text-muted",
+              ]}>ES</a
+            >
+            <a
+              href={enHref}
+              hreflang="en"
+              class:list={[
+                "rounded-pill px-3 py-1.5 transition-colors",
+                lang === "en" ? "bg-neutral text-white" : "text-muted",
+              ]}>EN</a
+            >
+          </div>
+          <a
+            href="#"
+            class="rounded-pill border border-border px-4 py-2 text-sm font-semibold text-heading"
+            >{t.nav.login}</a
+          >
+        </div>
+
+        <a
+          href={demo}
+          class="mt-3 flex items-center justify-center rounded-pill bg-neutral px-4 py-3 text-sm font-semibold text-white"
+          >{t.nav.requestDemo}</a
+        >
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="bg-neutral text-white/70">
+      <div
+        class="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.6fr_1fr_1fr_1fr] md:px-8"
+      >
+        <div>
+          <a href={home} class="flex items-center gap-2.5 font-bold text-white">
+            <img
+              src="/glottia-logo.webp"
+              alt="Glottia"
+              width="30"
+              height="30"
+              class="size-7"
+            />
+            <span class="text-lg">Glottia</span>
+          </a>
+          <p class="mt-3 max-w-xs text-sm text-white/55">{t.footer.tagline}</p>
+          <div class="mt-5 flex gap-2.5">
+            {
+              (["x", "instagram", "globe"] as const).map((s) => (
+                <a
+                  href="#"
+                  aria-label={s}
+                  class="flex size-9 items-center justify-center rounded-pill bg-white/5 text-white/70 transition-colors hover:bg-primary hover:text-neutral"
+                >
+                  <Icon name={s} class="size-4" />
+                </a>
+              ))
+            }
+          </div>
+        </div>
+
+        <nav aria-label={t.footer.cols.product}>
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-white/40">
+            {t.footer.cols.product}
+          </h2>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            <li>
+              <a href={`${home}#platform`} class="transition-colors hover:text-primary"
+                >{t.footer.links.benefits}</a
+              >
+            </li>
+            <li>
+              <a href={demo} class="transition-colors hover:text-primary"
+                >{t.footer.links.demo}</a
+              >
+            </li>
+            <li>
+              <a href={demo} class="transition-colors hover:text-primary"
+                >{t.footer.links.meetups}</a
+              >
+            </li>
+          </ul>
+        </nav>
+
+        <nav aria-label={t.footer.cols.company}>
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-white/40">
+            {t.footer.cols.company}
+          </h2>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.about}</a></li>
+            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.contact}</a></li>
+            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.careers}</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label={t.footer.cols.legal}>
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-white/40">
+            {t.footer.cols.legal}
+          </h2>
+          <ul class="mt-4 space-y-2.5 text-sm">
+            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.privacy}</a></li>
+            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.terms}</a></li>
+            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.security}</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="border-t border-white/10">
+        <div class="mx-auto max-w-6xl px-5 py-6 text-xs text-white/40 md:px-8">
+          © {new Date().getFullYear()} Glottia. {t.footer.rights}
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const toggle = document.getElementById("theme-toggle");
+      toggle?.addEventListener("click", () => {
+        const isDark = document.documentElement.classList.toggle("dark");
+        try {
+          localStorage.setItem("glottia:theme", isDark ? "dark" : "light");
+        } catch (e) {}
+      });
+
+      // Mobile menu
+      const menuToggle = document.getElementById("menu-toggle");
+      const menu = document.getElementById("mobile-menu");
+      menuToggle?.addEventListener("click", () => {
+        const open = menu?.classList.toggle("hidden") === false;
+        menuToggle.setAttribute("aria-expanded", String(open));
+      });
+      menu?.querySelectorAll("a").forEach((a) =>
+        a.addEventListener("click", () => {
+          menu.classList.add("hidden");
+          menuToggle?.setAttribute("aria-expanded", "false");
+        }),
+      );
+    </script>
+  </body>
+</html>

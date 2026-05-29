@@ -1,0 +1,11 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DemoSection from "../components/sections/DemoSection.astro";
+import { useTranslations } from "../utils/i18n";
+
+const t = useTranslations("en");
+---
+
+<BaseLayout title={`${t.demo.title} — Glottia`} description={t.demo.subtitle}>
+  <DemoSection />
+</BaseLayout>

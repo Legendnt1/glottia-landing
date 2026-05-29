@@ -1,0 +1,146 @@
+---
+import { getLangFromUrl, useTranslations, localizePath } from "../../utils/i18n";
+import Icon from "../Icon.astro";
+import MobileMockShell from "../demo/MobileMockShell.astro";
+import HeroAppPreview from "../mockups/HeroAppPreview.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const h = t.hero;
+
+// Floating chips reuse real product data for authenticity.
+const floatLevel = t.mockups.meetup.floatLevel;
+const floatPts = t.mockups.progress.floatPts;
+const floatStreak = t.mockups.progress.floatStreak;
+
+const demoHref = localizePath("/demo", lang);
+---
+
+<section id="top" class="relative overflow-hidden">
+  <!-- Atmosphere -->
+  <div
+    class="pointer-events-none absolute inset-0 -z-10"
+    aria-hidden="true"
+  >
+    <div
+      class="absolute -right-40 -top-40 size-160 rounded-full bg-primary/15 blur-[140px]"
+    >
+    </div>
+    <div
+      class="absolute -left-40 top-40 size-120 rounded-full bg-secondary/10 blur-[130px]"
+    >
+    </div>
+  </div>
+
+  <div
+    class="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-8 pt-12 md:px-8 md:pt-20 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6"
+  >
+    <!-- Copy -->
+    <div class="text-center lg:text-left">
+      <span
+        class="animate-fade-in animate-duration-slow inline-flex items-center gap-2 rounded-pill bg-accent-soft px-4 py-1.5 text-xs font-semibold text-accent"
+      >
+        <Icon name="heart" class="size-3.5" />
+        {h.badge}
+      </span>
+
+      <h1
+        class="animate-fade-in-up animate-duration-slow mt-6 text-balance text-[2.6rem] font-extrabold leading-[1.04] tracking-tight text-heading md:text-6xl"
+      >
+        {h.titlePre}{" "}
+        <span class="text-gradient-brand">{h.titleHl1}</span>{h.titleMid}{" "}
+        <span class="text-gradient-brand">{h.titleHl2}</span>{h.titlePost}
+      </h1>
+
+      <p
+        class="animate-fade-in-up animate-delay-150 animate-duration-slow mx-auto mt-6 max-w-xl text-pretty text-base text-body lg:mx-0 md:text-lg"
+      >
+        {h.subtitle}
+      </p>
+
+      <div
+        class="animate-fade-in-up animate-delay-300 animate-duration-slow mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start"
+      >
+        <a
+          href={demoHref}
+          class="group inline-flex items-center justify-center gap-2 rounded-pill bg-neutral px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-neutral/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-secondary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/40"
+        >
+          {h.ctaPrimary}
+          <Icon
+            name="arrow"
+            class="size-4 transition-transform group-hover:translate-x-0.5"
+          />
+        </a>
+        <a
+          href="#platform"
+          class="inline-flex items-center justify-center gap-2 rounded-pill border border-border bg-surface px-7 py-3.5 text-sm font-semibold text-heading transition-all duration-200 hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30"
+        >
+          {h.ctaSecondary}
+        </a>
+      </div>
+
+      <p
+        class="animate-fade-in animate-delay-500 mt-7 flex items-center justify-center gap-2 text-xs font-semibold text-muted lg:justify-start"
+      >
+        <span class="size-2.5 rounded-full bg-primary"></span>
+        {h.brandTag}
+      </p>
+    </div>
+
+    <!-- Phone + floating cards -->
+    <div
+      class="animate-fade-in animate-duration-slower relative mx-auto w-full max-w-90"
+    >
+      <MobileMockShell>
+        <HeroAppPreview />
+      </MobileMockShell>
+
+      <!-- Floating: meetup level (top-left) -->
+      <div
+        class="animate-float animate-duration-1000 absolute -left-4 top-16 flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-xl shadow-neutral/10 sm:-left-8"
+      >
+        <span class="flex size-8 items-center justify-center rounded-xl bg-accent-soft text-accent">
+          <Icon name="check" class="size-4" />
+        </span>
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-wider text-muted">
+            {floatLevel.tag}
+          </p>
+          <p class="text-xs font-bold text-heading">{floatLevel.value}</p>
+        </div>
+      </div>
+
+      <!-- Floating: quiz points (right) -->
+      <div
+        class="animate-float animate-delay-500 animate-duration-1000 absolute -right-2 top-1/2 flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-xl shadow-neutral/10 sm:-right-6"
+      >
+        <span class="flex size-8 items-center justify-center rounded-xl bg-accent-soft text-accent">
+          <Icon name="star" class="size-4" />
+        </span>
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-wider text-muted">
+            {floatPts.tag}
+          </p>
+          <p class="text-xs font-bold text-heading">{floatPts.value}</p>
+        </div>
+      </div>
+
+      <!-- Floating: streak (bottom-left) -->
+      <div
+        class="animate-float animate-delay-300 animate-duration-1000 absolute -left-2 bottom-12 flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-xl shadow-neutral/10 sm:-left-6"
+      >
+        <span class="flex size-8 items-center justify-center rounded-xl bg-[#fdf3d6] text-[#b8860b]">
+          <Icon name="flame" class="size-4" />
+        </span>
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-wider text-muted">
+            {floatStreak.tag}
+          </p>
+          <p class="text-xs font-bold text-heading">{floatStreak.value}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pb-8 md:pb-16"></div>
+</section>

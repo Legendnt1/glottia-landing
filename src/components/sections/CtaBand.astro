@@ -1,0 +1,57 @@
+---
+import { getLangFromUrl, useTranslations, localizePath } from "../../utils/i18n";
+import Icon from "../Icon.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const c = t.cta;
+
+const demoHref = localizePath("/demo", lang);
+---
+
+<section id="cta" class="scroll-mt-24 px-5 py-16 md:px-8 md:py-24">
+  <div
+    class="relative mx-auto max-w-6xl overflow-hidden rounded-4xl bg-linear-to-br from-secondary via-secondary to-primary px-7 py-12 md:px-14 md:py-16"
+  >
+    <!-- Decorative glow -->
+    <div
+      class="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-white/15 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div
+      class="relative flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between"
+    >
+      <div class="max-w-xl">
+        <h2
+          class="text-balance text-3xl font-extrabold leading-tight tracking-tight text-white md:text-4xl"
+        >
+          {c.title}
+        </h2>
+        <p class="mt-3 text-pretty text-base text-white/85 md:text-lg">
+          {c.subtitle}
+        </p>
+      </div>
+
+      <div class="flex shrink-0 flex-col gap-3 sm:flex-row">
+        <a
+          href={demoHref}
+          class="group inline-flex items-center justify-center gap-2 rounded-pill bg-white px-7 py-3.5 text-sm font-bold text-neutral shadow-lg transition-all hover:-translate-y-0.5"
+        >
+          {c.primary}
+          <Icon
+            name="arrow"
+            class="size-4 transition-transform group-hover:translate-x-0.5"
+          />
+        </a>
+        <a
+          href={`${demoHref}#quiz`}
+          class="inline-flex items-center justify-center gap-2 rounded-pill border border-white/60 px-7 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
+        >
+          {c.secondary}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

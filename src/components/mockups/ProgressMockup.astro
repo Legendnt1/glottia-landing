@@ -1,0 +1,96 @@
+---
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+import Icon from "../Icon.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const m = t.mockups.progress;
+---
+
+<div class="relative mx-auto w-full max-w-md">
+  <div
+    class="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-accent-soft/60 blur-2xl"
+    aria-hidden="true"
+  >
+  </div>
+
+  <!-- Progress card -->
+  <div
+    class="rounded-card border border-border bg-surface p-6 shadow-xl shadow-neutral/5"
+  >
+    <!-- FluencyScore -->
+    <div class="flex items-center gap-4">
+      <div
+        class="flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-primary text-2xl font-extrabold text-heading"
+      >
+        {m.fluencyValue}
+      </div>
+      <div>
+        <p class="text-[11px] font-bold uppercase tracking-wider text-muted">
+          {m.fluencyLabel}
+        </p>
+        <p class="mt-1 text-sm font-semibold text-heading">{m.levelLabel}</p>
+      </div>
+    </div>
+
+    <!-- Skill dimensions -->
+    <div class="mt-6 space-y-3.5">
+      {
+        m.dims.map((dim) => (
+          <div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-medium text-body">{dim.label}</span>
+              <span class="font-bold text-accent">{dim.pct}%</span>
+            </div>
+            <div class="mt-1.5 h-2 overflow-hidden rounded-pill bg-accent-soft">
+              <div class="h-full rounded-pill bg-primary" style={`width:${dim.pct}%`} />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Ranking row -->
+    <div
+      class="mt-6 flex items-center justify-between rounded-2xl bg-canvas px-4 py-3"
+    >
+      <span class="flex items-center gap-2 text-sm font-semibold text-heading">
+        <Icon name="trophy" class="size-4 text-accent" />
+        {m.rankLabel}
+      </span>
+      <span class="rounded-pill bg-neutral px-3 py-1 text-sm font-bold text-white">
+        {m.rankValue}
+      </span>
+    </div>
+  </div>
+
+  <!-- Floating: points -->
+  <div
+    class="animate-float animate-duration-1000 absolute -right-3 -top-5 flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-xl shadow-neutral/10 sm:-right-6"
+  >
+    <span class="flex size-8 items-center justify-center rounded-xl bg-accent-soft text-accent">
+      <Icon name="star" class="size-4" />
+    </span>
+    <div>
+      <p class="text-[9px] font-bold uppercase tracking-wider text-muted">
+        {m.floatPts.tag}
+      </p>
+      <p class="text-xs font-bold text-heading">{m.floatPts.value}</p>
+    </div>
+  </div>
+
+  <!-- Floating: streak -->
+  <div
+    class="animate-float animate-delay-300 animate-duration-1000 absolute -bottom-6 -left-3 flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 shadow-xl shadow-neutral/10 sm:-left-6"
+  >
+    <span class="flex size-8 items-center justify-center rounded-xl bg-[#fdf3d6] text-[#b8860b]">
+      <Icon name="flame" class="size-4" />
+    </span>
+    <div>
+      <p class="text-[9px] font-bold uppercase tracking-wider text-muted">
+        {m.floatStreak.tag}
+      </p>
+      <p class="text-xs font-bold text-heading">{m.floatStreak.value}</p>
+    </div>
+  </div>
+</div>

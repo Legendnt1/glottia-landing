@@ -1,0 +1,140 @@
+@import "tailwindcss";
+@import "tailwind-animations";
+
+/* Class-based dark mode: `dark:` applies inside `.dark` on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   Glottia — Design System (Tailwind v4 @theme)
+
+   Brand tokens are constant across themes; semantic tokens resolve from
+   runtime CSS variables so a single `.dark` class on <html> flips the UI.
+   Primary #AADD00 · Secondary #7AA300 · Tertiary #E8F5B0 · Neutral #141414
+   Typography: 'DM Sans' (loaded via Google Fonts <link> in BaseLayout).
+   ========================================================================== */
+@theme {
+  /* Brand — constant */
+  --color-primary: #aadd00;
+  --color-secondary: #7aa300;
+  --color-tertiary: #e8f5b0;
+  --color-neutral: #141414;
+
+  /* Semantic — theme-switchable (values set in @layer base below) */
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-heading: var(--heading);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.5rem;
+  --radius-pill: 9999px;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --canvas: #f6f7ee; /* warm cream, matches the app */
+    --surface: #ffffff;
+    --elevated: #ffffff;
+    --heading: #1a230f;
+    --body: #515a44;
+    --muted: #767e63;
+    --border: #e7e9d8;
+    --accent: #5f7d00;
+    --accent-soft: #eef4cf;
+    --grad-from: #6a8f00;
+    --grad-to: #9ccb14;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --canvas: #0f110b;
+    --surface: #181a13;
+    --elevated: #20231a;
+    --heading: #ffffff;
+    --body: #c8ccbc;
+    --muted: #909685;
+    --border: #2b2e22;
+    --accent: #aadd00;
+    --accent-soft: #222b0d;
+    --grad-from: #aadd00;
+    --grad-to: #d7f06a;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: clip; /* guard against floating-card overflow on small screens */
+    background-color: var(--color-canvas);
+    color: var(--color-body);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  /* Signature gradient headline highlight (theme-aware). */
+  .text-gradient-brand {
+    background-image: linear-gradient(
+      115deg,
+      var(--grad-from),
+      var(--grad-to)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

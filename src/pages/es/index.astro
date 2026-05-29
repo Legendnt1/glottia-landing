@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import HeroSection from "../../components/sections/HeroSection.astro";
+import PlatformIntro from "../../components/sections/PlatformIntro.astro";
+import FeatureSection from "../../components/sections/FeatureSection.astro";
+import CtaBand from "../../components/sections/CtaBand.astro";
+---
+
+<BaseLayout>
+  <HeroSection />
+  <PlatformIntro />
+  <FeatureSection index={0} />
+  <FeatureSection index={1} />
+  <CtaBand />
+</BaseLayout>
