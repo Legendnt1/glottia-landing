@@ -64,7 +64,8 @@ Defined in `src/styles/global.css` using Tailwind v4 `@theme` + runtime CSS vari
 
 ```
 src/
-  styles/global.css        # @theme tokens, light/dark vars, base resets, .text-gradient-brand
+  styles/global.css        # @theme tokens, light/dark vars, base resets, .text-gradient-brand,
+                           # scroll-driven demo keyframes + .animate-app-* timeline utilities
   utils/i18n.ts            # EN/ES dictionaries (source of truth) + helpers
   layouts/BaseLayout.astro # <head> (SEO/OG/hreflang), theme bootstrap, ES auto-redirect,
                            # header (nav + lang switch + theme toggle), dark footer, slots
@@ -75,14 +76,16 @@ src/
       PlatformIntro.astro  # centered statement + 4 KPI cards
       FeatureSection.astro # REUSABLE alternating feature block; prop: index (0..1)
       CtaBand.astro        # gradient call-to-action band
-      DemoSection.astro    # /demo page body (copy + interactive phone)
+      DemoSection.astro    # /demo page body: intro copy + <DemoAppInterface/>
     mockups/               # presentational UI mockups (data from i18n)
       HeroAppPreview.astro # static app Home screen for the hero phone (greeting, FluencyScore, meetups)
       MeetupMockup.astro   # feature 1 — meetup card + floating level/points chips
       ProgressMockup.astro # feature 2 — FluencyScore ring, skill bars, weekly rank
     demo/
-      MobileMockShell.astro   # pure CSS phone frame (bezel, notch, cream screen)
-      DemoAppInterface.astro  # interactive demo (vanilla JS): Home → Meetup → Quiz → Ranking
+      MobileMockShell.astro   # pure CSS phone frame (bezel, notch, fixed cream screen)
+      DemoAppInterface.astro  # scroll-driven walkthrough: sticky phone + 4 screens
+                              # (Home → Meetup → Quiz → Ranking) animated via CSS
+                              # scroll timeline; step list + click-to-scroll nav
   pages/
     index.astro            # EN home  → Hero, PlatformIntro, 2× FeatureSection, CtaBand
     demo.astro             # EN demo
@@ -94,6 +97,12 @@ src/
 `HeroSection → PlatformIntro → FeatureSection(0 meetups) → FeatureSection(1 progress/gamification, reversed) → CtaBand`. The footer comes from `BaseLayout`.
 
 > Note: the old **"5W + 2H" `ProblemSolutionSection`** and `MVPSection` were removed earlier. The landing was then re-aligned to the real Figma product: the demo is the learner journey (Home → Meetup → Quiz → Ranking), and the second feature is **progress & gamification** (FluencyScore, quizzes, streaks, ranking) — the previously-invented "café/merchant dashboard" was dropped because the product has no merchant side. Keep copy faithful to the app (meetups, FluencyScore, Madrid/Café Central, CEFR levels — not bookings/PEN/Lima).
+
+### Demo (scroll-driven, `DemoAppInterface.astro`)
+- **Continuous scroll animation, CSS-only.** Four app screens are stacked absolutely inside the pinned (`sticky`) phone and bound to a CSS **`view-timeline`** named `--mobileDemoTimeline`. The timeline is defined on the `.demo-scroll-foundation` (four `h-screen` spacers) and hoisted to the screens via `timeline-scope` on the `.demo-timeline-track` section, so the mouse wheel drives screen states fluidly. Keyframes/utilities live in `global.css` (`appScreenHome/Meetup/Quiz/Ranking`, `.animate-app-*`).
+- **Fallback:** `@supports not (animation-timeline: view())` (Safari/Firefox) reveals the active screen via a JS-maintained `[data-active]` attribute on the track.
+- **JS is sync-only, not scroll-jacking:** an `IntersectionObserver` on the spacers keeps the step list / dots / phone chrome (`data-screen-title`, bottom-nav) in sync, and `[data-jump]` elements (step cards, bottom-nav tabs, in-screen CTAs) `scrollIntoView({behavior:'smooth'})` the matching spacer. The quiz answer interaction is independent vanilla JS.
+- Reserve `scroll-timeline`/`animation-timeline` for this demo; don't sprinkle scroll-driven animations elsewhere (use `view-animate-*` from tailwind-animations for simple reveals).
 
 ---
 
@@ -123,3 +132,8 @@ Project skills live in `.agents/skills/` (astro-framework, tailwind-css-patterns
 
 - `public/glottia-logo.webp` — brand mark (also favicon / OG image).
 - `astro.config.mjs` — sets `site: "https://glottia.app"` (update to the real production domain) for canonical/OG absolute URLs; registers the Tailwind Vite plugin and Vercel adapter.
+
+## Final Considerations
+
+- **Important changes**: If you make a significant changes like structural edits, new components, or copy changes, update this `CLAUDE.md` file with a brief note about what you changed and any relevant context. This helps future maintainers understand the rationale behind the change.
+- **Small edits**: For minor tweaks (typos, small style adjustments), you can skip updating this file, but for anything that affects the architecture, design, or user experience, please add a note here.

@@ -1,6 +1,5 @@
 ---
 import { getLangFromUrl, useTranslations } from "../../utils/i18n";
-import MobileMockShell from "../demo/MobileMockShell.astro";
 import DemoAppInterface from "../demo/DemoAppInterface.astro";
 import Icon from "../Icon.astro";
 
@@ -28,188 +27,15 @@ const d = t.demo;
       {d.subtitle}
     </p>
     <p
-      class="animate-fade-in animate-delay-500 mt-6 inline-flex items-center gap-2 text-xs font-semibold text-muted lg:hidden"
+      class="animate-fade-in animate-delay-500 mt-6 inline-flex items-center gap-2 text-xs font-semibold text-muted"
     >
       <span class="animate-bouncing inline-flex">
         <Icon name="arrow" class="size-4 rotate-90" />
       </span>
       {d.scrollHint}
     </p>
-    <p
-      class="animate-fade-in animate-delay-500 mt-6 hidden items-center gap-2 text-xs font-semibold text-muted lg:inline-flex"
-    >
-      <Icon name="sparkles" class="size-4 text-accent" />
-      {d.tapHint}
-    </p>
   </div>
 </section>
 
-<!-- Scroll-driven walkthrough -->
-<section id="demo-scroll" class="relative">
-  <!-- Pinned stage -->
-  <div
-    class="sticky top-0 z-10 flex min-h-svh flex-col items-center justify-center gap-4 px-5 py-4 md:px-8 lg:static lg:min-h-0 lg:flex-row lg:gap-16 lg:py-16"
-  >
-    <!-- Phone (mobile: same size as the hero phone) -->
-    <div
-      class="order-1 w-full max-w-90 shrink-0 lg:order-2 lg:w-[300px]"
-    >
-      <MobileMockShell>
-        <DemoAppInterface />
-      </MobileMockShell>
-    </div>
-
-    <!-- Step captions (desktop: full list) -->
-    <ol
-      id="demo-steps"
-      class="order-2 hidden w-full max-w-md lg:order-1 lg:block"
-    >
-      {
-        d.steps.map((step, i) => (
-          <li
-            data-caption={i}
-            class:list={[
-              "flex gap-4 py-3 transition-all duration-300",
-              i === 0 ? "opacity-100" : "opacity-40",
-            ]}
-          >
-            <span
-              data-caption-num
-              class:list={[
-                "flex size-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-colors",
-                i === 0
-                  ? "border-primary bg-primary text-neutral"
-                  : "border-border text-muted",
-              ]}
-            >
-              {i + 1}
-            </span>
-            <div>
-              <p class="font-bold text-heading md:text-lg">{step.title}</p>
-              <p class="mt-1 text-sm text-body">{step.desc}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ol>
-
-    <!-- Step caption (mobile: compact, single active step) -->
-    <div class="order-2 w-full max-w-sm text-center lg:hidden">
-      <p id="m-step-title" class="text-base font-extrabold text-heading">
-        {d.steps[0].title}
-      </p>
-      <div class="mt-2 flex justify-center gap-2" aria-hidden="true">
-        {
-          d.steps.map((_, i) => (
-            <span
-              data-dot={i}
-              class:list={[
-                "h-1.5 rounded-pill transition-all duration-300",
-                i === 0 ? "w-6 bg-primary" : "w-1.5 bg-border",
-              ]}
-            />
-          ))
-        }
-      </div>
-    </div>
-  </div>
-
-  <!-- Invisible scroll sentinels that drive the active step (mobile only) -->
-  <div class="pointer-events-none lg:hidden" aria-hidden="true">
-    {d.steps.map((_, i) => <div data-step={i} class="h-[85vh]" />)}
-  </div>
-</section>
-
-<script>
-  const story = document.getElementById("demo-scroll");
-  const demo = document.getElementById("glottia-demo");
-  if (story && demo) {
-    const sentinels = Array.from(
-      story.querySelectorAll<HTMLElement>("[data-step]"),
-    );
-    const captions = Array.from(
-      story.querySelectorAll<HTMLElement>("[data-caption]"),
-    );
-    const dots = Array.from(story.querySelectorAll<HTMLElement>("[data-dot]"));
-    const tabs = Array.from(demo.querySelectorAll<HTMLElement>("[data-tab]"));
-    const mTitle = story.querySelector<HTMLElement>("#m-step-title");
-    const mDesc = story.querySelector<HTMLElement>("#m-step-desc");
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    let quizTimer: number | undefined;
-
-    // Visual-only: highlight the matching step caption / dots (no phone drive).
-    function updateCaptions(index: number) {
-      captions.forEach((cap, i) => {
-        const on = i === index;
-        cap.classList.toggle("opacity-100", on);
-        cap.classList.toggle("opacity-40", !on);
-        const num = cap.querySelector<HTMLElement>("[data-caption-num]");
-        if (num) {
-          num.classList.toggle("border-primary", on);
-          num.classList.toggle("bg-primary", on);
-          num.classList.toggle("text-neutral", on);
-          num.classList.toggle("border-border", !on);
-          num.classList.toggle("text-muted", !on);
-        }
-      });
-
-      dots.forEach((dot, i) => {
-        const on = i === index;
-        dot.classList.toggle("w-6", on);
-        dot.classList.toggle("bg-primary", on);
-        dot.classList.toggle("w-1.5", !on);
-        dot.classList.toggle("bg-border", !on);
-      });
-
-      const src = captions[index]?.querySelectorAll("p");
-      if (mTitle && src?.[0]) mTitle.textContent = src[0].textContent;
-      if (mDesc && src?.[1]) mDesc.textContent = src[1].textContent;
-    }
-
-    // MOBILE: scroll sentinels drive the phone + captions, with quiz autoplay.
-    // (Sentinels are display:none ≥ lg, so this never fires on desktop.)
-    let scrollActive = -1;
-    function goToStep(index: number) {
-      if (index === scrollActive) return;
-      scrollActive = index;
-      tabs[index]?.click(); // reuse the phone's own navigation
-      updateCaptions(index);
-
-      window.clearTimeout(quizTimer);
-      if (index === 2 && !reduceMotion) {
-        quizTimer = window.setTimeout(() => {
-          if (scrollActive !== 2) return;
-          demo
-            ?.querySelector<HTMLElement>('[data-option][data-correct="true"]')
-            ?.click();
-        }, 1100);
-      }
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            goToStep(Number((entry.target as HTMLElement).dataset.step));
-          }
-        });
-      },
-      { rootMargin: "-50% 0px -50% 0px", threshold: 0 },
-    );
-    sentinels.forEach((s) => observer.observe(s));
-
-    // DESKTOP: the phone is interactive; sync the step list to its active
-    // screen whenever the user taps a tab or an in-screen button.
-    const syncFromPhone = () =>
-      updateCaptions(Number(demo.getAttribute("data-active")) || 0);
-    new MutationObserver(syncFromPhone).observe(demo, {
-      attributes: true,
-      attributeFilter: ["data-active"],
-    });
-
-    updateCaptions(0);
-  }
-</script>
+<!-- Scroll-driven, click-navigable app walkthrough -->
+<DemoAppInterface />
