@@ -1,0 +1,93 @@
+---
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+import Icon from "../Icon.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const faq = t.media.faq;
+---
+
+<section id="faq" class="scroll-mt-24 px-5 py-16 md:px-8 md:py-20">
+  <div class="mx-auto max-w-2xl text-center">
+    <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">
+      {faq.eyebrow}
+    </span>
+    <h2
+      class="view-animate-fade-in-up animate-duration-slow mt-4 text-balance text-3xl font-extrabold leading-[1.1] tracking-tight text-gradient-brand md:text-4xl"
+    >
+      {faq.title}
+    </h2>
+    <p
+      class="view-animate-fade-in-up animate-delay-150 animate-duration-slow mx-auto mt-4 max-w-xl text-pretty text-base text-body md:text-lg"
+    >
+      {faq.subtitle}
+    </p>
+  </div>
+
+  <div class="mx-auto mt-12 max-w-3xl space-y-3">
+    {
+      faq.items.map((item) => (
+        <details class="faq-item group rounded-card border border-border bg-surface px-5 transition-colors open:border-accent/40 md:px-6">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left font-bold text-heading focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+            {item.q}
+            <Icon
+              name="chevron"
+              class="faq-chevron size-5 shrink-0 text-accent transition-transform duration-200"
+            />
+          </summary>
+          <p class="faq-body pb-5 text-sm leading-relaxed text-body md:text-base">
+            {item.a}
+          </p>
+        </details>
+      ))
+    }
+  </div>
+
+  <div class="mx-auto mt-10 max-w-3xl text-center">
+    <p class="text-sm text-muted">{faq.footnote}</p>
+    <a
+      href={faq.contactHref}
+      class="mt-1 inline-block text-sm font-bold text-accent transition-colors hover:text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+    >
+      {faq.contactLabel}
+    </a>
+  </div>
+</section>
+
+<style>
+  /* Hide the native disclosure triangle (we use our own SVG chevron). */
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Rotate the chevron when the item is open. */
+  .faq-item[open] .faq-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Reveal the answer with a compositor-only fade/slide — opacity + transform
+     only, so opening an item never triggers layout thrashing or CLS. */
+  .faq-item[open] .faq-body {
+    animation: faqReveal 0.18s ease both;
+  }
+
+  @keyframes faqReveal {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-item .faq-chevron {
+      transition: none;
+    }
+    .faq-item[open] .faq-body {
+      animation: none;
+    }
+  }
+</style>

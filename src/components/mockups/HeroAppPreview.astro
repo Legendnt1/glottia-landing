@@ -9,7 +9,7 @@ const navIcons = ["home", "users", "sparkles", "user"] as const;
 ---
 
 <!-- Static light app screen for the hero phone (real Glottia Home). -->
-<div class="flex h-full flex-col bg-[#f6f7ee] text-neutral">
+<div class="flex h-full flex-col bg-cream text-neutral">
   <!-- Status bar -->
   <div
     class="flex items-center justify-between px-6 pb-1 pt-3 text-[11px] font-semibold text-neutral/70"
@@ -77,9 +77,9 @@ const navIcons = ["home", "users", "sparkles", "user"] as const;
   <div class="mt-2 space-y-2.5 px-5">
     {
       a.meetups.map((meet) => (
-        <div class="rounded-2xl border border-black/5 bg-white p-3.5 shadow-[0_1px_2px_rgba(20,20,20,0.04)]">
+        <div class="rounded-2xl border border-black/5 bg-white p-3.5 shadow-card-xs">
           <div class="flex items-center gap-2 text-[10px] font-semibold">
-            <span class="rounded-pill bg-[#eef4cf] px-2 py-0.5 text-secondary">
+            <span class="rounded-pill bg-lime-soft px-2 py-0.5 text-secondary">
               {meet.level}
             </span>
             <span class="text-neutral/40">{meet.time}</span>

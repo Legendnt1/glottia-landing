@@ -1,0 +1,69 @@
+---
+// Reusable video frame for the Media & Community page.
+// - If `embedUrl` is provided, renders a lazy-loaded, aspect-locked <iframe>.
+// - Otherwise renders a lightweight, dependency-free facade placeholder (a
+//   clickable poster with a play button) — no third-party script, zero CLS.
+// The 16:9 ratio is reserved up-front (aspect-video + width/height) so the
+// layout never shifts while media loads.
+import Icon from "../Icon.astro";
+
+interface Props {
+  title: string;
+  embedUrl?: string;
+  watchUrl?: string;
+  class?: string;
+}
+
+const { title, embedUrl = "", watchUrl = "#", class: className = "" } =
+  Astro.props;
+---
+
+<div
+  class:list={[
+    "relative aspect-video w-full overflow-hidden rounded-card border border-border bg-neutral shadow-xl shadow-neutral/10",
+    className,
+  ]}
+>
+  {
+    embedUrl ? (
+      <iframe
+        src={embedUrl}
+        title={title}
+        width="1280"
+        height="720"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+        class="absolute inset-0 block size-full border-0"
+      />
+    ) : (
+      <a
+        href={watchUrl}
+        aria-label={`Play: ${title}`}
+        class="group absolute inset-0 flex flex-col justify-between bg-linear-to-br from-[#1c1c1c] via-neutral to-[#0a0a0a] p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 md:p-5"
+      >
+        {/* Title row (top-left) */}
+        <div class="flex items-center gap-2">
+          <span class="flex size-7 items-center justify-center rounded-full bg-primary/20 text-primary">
+            <Icon name="play" class="size-3.5" />
+          </span>
+          <span class="text-sm font-bold text-white md:text-base">{title}</span>
+        </div>
+
+        {/* Center play button */}
+        <span
+          class="pointer-events-none absolute left-1/2 top-1/2 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-neutral shadow-lg shadow-black/40 transition-transform duration-200 group-hover:scale-110"
+        >
+          <Icon name="play" class="size-7" />
+        </span>
+
+        {/* Footer hint (bottom-right) */}
+        <span class="ml-auto inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/60">
+          <Icon name="globe" class="size-3.5" />
+          Glottia
+        </span>
+      </a>
+    )
+  }
+</div>

@@ -5,6 +5,7 @@ import {
   useTranslations,
   alternatePath,
   localizePath,
+  legalPath,
 } from "../utils/i18n";
 import Icon from "../components/Icon.astro";
 
@@ -27,10 +28,13 @@ const demo = localizePath("/demo", lang);
 const esHref = alternatePath(Astro.url, "es");
 const enHref = alternatePath(Astro.url, "en");
 
+const media = localizePath("/media", lang);
+
 const navLinks = [
   { label: t.nav.home, href: `${home}#top` },
   { label: t.nav.benefits, href: `${home}#platform` },
   { label: t.nav.howItWorks, href: demo },
+  { label: t.nav.community, href: media },
 ];
 
 // Only the canonical English root performs locale auto-detection.
@@ -100,6 +104,8 @@ const isRoot = Astro.url.pathname === "/";
     <meta name="twitter:image" content={ogImage.href} />
 
     <!-- DM Sans via native Google Fonts <link> elements -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -132,6 +138,9 @@ const isRoot = Astro.url.pathname === "/";
               alt="Glottia"
               width="34"
               height="34"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
               class="size-8"
             />
           </slot>
@@ -300,6 +309,8 @@ const isRoot = Astro.url.pathname === "/";
               alt="Glottia"
               width="30"
               height="30"
+              loading="lazy"
+              decoding="async"
               class="size-7"
             />
             <span class="text-lg">Glottia</span>
@@ -359,9 +370,9 @@ const isRoot = Astro.url.pathname === "/";
             {t.footer.cols.legal}
           </h2>
           <ul class="mt-4 space-y-2.5 text-sm">
-            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.privacy}</a></li>
-            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.terms}</a></li>
-            <li><a href="#" class="transition-colors hover:text-primary">{t.footer.links.security}</a></li>
+            <li><a href={legalPath("privacy", lang)} class="transition-colors hover:text-primary">{t.footer.links.privacy}</a></li>
+            <li><a href={legalPath("terms", lang)} class="transition-colors hover:text-primary">{t.footer.links.terms}</a></li>
+            <li><a href={legalPath("security", lang)} class="transition-colors hover:text-primary">{t.footer.links.security}</a></li>
           </ul>
         </nav>
       </div>

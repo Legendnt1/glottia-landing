@@ -19,6 +19,15 @@
   --color-tertiary: #e8f5b0;
   --color-neutral: #141414;
 
+  /* Fixed app-screen palette — phone mockups stay light regardless of theme. */
+  --color-cream: #f6f7ee; /* mock device screen background */
+  --color-lime-soft: #eef4cf; /* in-app chips, progress tracks, badges */
+  --color-amber-soft: #fdf3d6; /* streak chip background */
+  --color-amber: #b8860b; /* streak chip foreground */
+
+  /* Soft card shadow used inside the app mockups. */
+  --shadow-card-xs: 0 1px 2px rgba(20, 20, 20, 0.04);
+
   /* Semantic — theme-switchable (values set in @layer base below) */
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
@@ -138,91 +147,25 @@
 }
 
 /* ==========================================================================
-   Scroll-driven app demo — CSS scroll timeline (Tailwind v4 + scroll-timeline)
-   The screens are bound to a `view-timeline` named on the tall track, so the
-   mouse wheel drives screen states continuously as the page scrolls. The phone
-   is pinned (position: sticky) while the track passes through the viewport.
+   App demo — click/tap-driven tabbed screens (no scroll timeline).
+   Screens are absolutely stacked; only the active one is shown (JS toggles the
+   `hidden` attribute on the others). Revealing a screen plays one lightweight,
+   compositor-only fade/scale — opacity + transform only, so there is zero
+   layout/paint cost and it stays smooth on low-end devices.
    ========================================================================== */
-@keyframes appScreenHome {
-  0% { opacity: 1; transform: scale(1); }
-  20% { opacity: 1; transform: scale(1); }
-  25% { opacity: 0; transform: scale(0.95); }
-  100% { opacity: 0; transform: scale(0.95); }
-}
-@keyframes appScreenMeetup {
-  0% { transform: translateY(100%); opacity: 0; }
-  23% { transform: translateY(100%); opacity: 0; }
-  33% { transform: translateY(0); opacity: 1; }
-  53% { transform: translateY(0); opacity: 1; }
-  58% { transform: translateY(-100%); opacity: 0; }
-  100% { transform: translateY(-100%); opacity: 0; }
-}
-@keyframes appScreenQuiz {
-  0% { transform: translateX(100%); opacity: 0; }
-  55% { transform: translateX(100%); opacity: 0; }
-  65% { transform: translateX(0); opacity: 1; }
-  80% { transform: translateX(0); opacity: 1; }
-  85% { transform: translateX(-10%) scale(0.95); opacity: 0; }
-  100% { transform: translateX(-10%) scale(0.95); opacity: 0; }
-}
-@keyframes appScreenRanking {
-  0% { opacity: 0; transform: scale(1.02); }
-  82% { opacity: 0; transform: scale(1.02); }
-  92% { opacity: 1; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@layer utilities {
-  /* The track hoists the timeline name so the (sticky) phone screens can bind
-     to a timeline defined on the scroll-foundation sibling below them. */
-  .demo-timeline-track {
-    timeline-scope: --mobileDemoTimeline;
-  }
-  /* The tall four-screen foundation is the actual scroll progress source. */
-  .demo-scroll-foundation {
-    view-timeline-name: --mobileDemoTimeline;
-    view-timeline-axis: block;
-  }
-
-  .animate-app-home {
-    animation: appScreenHome linear both;
-    animation-timeline: --mobileDemoTimeline;
-  }
-  .animate-app-meetup {
-    animation: appScreenMeetup linear both;
-    animation-timeline: --mobileDemoTimeline;
-  }
-  .animate-app-quiz {
-    animation: appScreenQuiz linear both;
-    animation-timeline: --mobileDemoTimeline;
-  }
-  .animate-app-ranking {
-    animation: appScreenRanking linear both;
-    animation-timeline: --mobileDemoTimeline;
-  }
-}
-
-/* Fallback for browsers without scroll-driven animations (Safari / Firefox):
-   reveal the active screen via the JS-maintained [data-active] attribute. */
-@supports not (animation-timeline: view()) {
-  .demo-timeline-track .animate-app-home,
-  .demo-timeline-track .animate-app-meetup,
-  .demo-timeline-track .animate-app-quiz,
-  .demo-timeline-track .animate-app-ranking {
-    animation: none;
+@keyframes appScreenFade {
+  from {
     opacity: 0;
-    transform: none;
-    transition:
-      opacity 0.4s ease,
-      transform 0.4s ease;
+    transform: scale(0.98);
   }
-  .demo-timeline-track[data-active="0"] .animate-app-home,
-  .demo-timeline-track[data-active="1"] .animate-app-meetup,
-  .demo-timeline-track[data-active="2"] .animate-app-quiz,
-  .demo-timeline-track[data-active="3"] .animate-app-ranking {
+  to {
     opacity: 1;
     transform: none;
   }
+}
+
+#glottia-demo .app-screen {
+  animation: appScreenFade 0.25s ease both;
 }
 
 /* Respect reduced-motion preferences. */

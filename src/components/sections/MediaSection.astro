@@ -1,0 +1,37 @@
+---
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+import ProductShowcase from "../media/ProductShowcase.astro";
+import TeamSection from "../media/TeamSection.astro";
+import Testimonials from "../media/Testimonials.astro";
+import FaqAccordion from "../media/FaqAccordion.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const h = t.media.hero;
+---
+
+<!-- Intro -->
+<section class="px-5 pt-16 text-center md:px-8 md:pt-24">
+  <div class="mx-auto max-w-2xl">
+    <span
+      class="inline-flex items-center gap-2 rounded-pill bg-accent-soft px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent"
+    >
+      {h.eyebrow}
+    </span>
+    <h1
+      class="animate-fade-in-up animate-duration-slow mt-4 text-balance text-3xl font-extrabold tracking-tight text-heading md:text-5xl"
+    >
+      {h.title}
+    </h1>
+    <p
+      class="animate-fade-in-up animate-delay-150 animate-duration-slow mx-auto mt-4 max-w-xl text-pretty text-base text-body md:text-lg"
+    >
+      {h.subtitle}
+    </p>
+  </div>
+</section>
+
+<ProductShowcase />
+<TeamSection />
+<Testimonials />
+<FaqAccordion />

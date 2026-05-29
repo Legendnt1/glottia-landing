@@ -1,0 +1,17 @@
+---
+import LegalLayout from "../../../layouts/LegalLayout.astro";
+import { legalDocs, legalSlugs, useTranslations } from "../../../utils/i18n";
+
+// One statically-compiled page per legal document (Spanish slugs).
+export function getStaticPaths() {
+  const t = useTranslations("es");
+  return legalDocs.map((doc) => ({
+    params: { slug: legalSlugs.es[doc] },
+    props: { doc: t.legal[doc] },
+  }));
+}
+
+const { doc } = Astro.props;
+---
+
+<LegalLayout doc={doc} />

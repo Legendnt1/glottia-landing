@@ -1,0 +1,77 @@
+---
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+import VideoFrame from "./VideoFrame.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const team = t.media.team;
+---
+
+<section id="team" class="scroll-mt-24 px-5 py-16 md:px-8 md:py-20">
+  <div class="mx-auto max-w-2xl text-center">
+    <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">
+      {team.eyebrow}
+    </span>
+    <h2
+      class="view-animate-fade-in-up animate-duration-slow mt-4 text-balance text-3xl font-extrabold leading-[1.1] tracking-tight text-heading md:text-4xl"
+    >
+      {team.title}
+    </h2>
+    <p
+      class="view-animate-fade-in-up animate-delay-150 animate-duration-slow mx-auto mt-4 max-w-xl text-pretty text-base text-body md:text-lg"
+    >
+      {team.subtitle}
+    </p>
+  </div>
+
+  <!-- Team directory matrix -->
+  <div
+    class="mx-auto mt-12 max-w-4xl overflow-hidden rounded-card border border-border bg-surface shadow-xl shadow-neutral/5"
+  >
+    <h3 class="px-6 py-5 text-center text-lg font-extrabold text-heading">
+      {team.matrixTitle}
+    </h3>
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-left text-sm">
+        <thead>
+          <tr class="border-y border-border bg-canvas/60 text-xs uppercase tracking-wider text-muted">
+            <th scope="col" class="px-6 py-3 font-semibold">{team.cols.name}</th>
+            <th scope="col" class="px-6 py-3 font-semibold">{team.cols.role}</th>
+            <th scope="col" class="px-6 py-3 font-semibold">{team.cols.desc}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            team.members.map((member) => (
+              <tr class="border-b border-border/60 transition-colors last:border-b-0 hover:bg-canvas/50">
+                <th
+                  scope="row"
+                  class="whitespace-nowrap px-6 py-4 text-left font-bold text-heading"
+                >
+                  {member.name}
+                </th>
+                <td class="whitespace-nowrap px-6 py-4 font-semibold text-accent">
+                  {member.role}
+                </td>
+                <td class="px-6 py-4 text-body">{member.desc}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Team video (below the matrix) -->
+  <div class="mx-auto mt-12 max-w-3xl">
+    <h3 class="text-center text-xl font-extrabold text-heading md:text-2xl">
+      {team.videoHeading}
+    </h3>
+    <VideoFrame
+      title={team.video.title}
+      embedUrl={team.video.embedUrl}
+      watchUrl={team.video.watchUrl}
+      class="view-animate-fade-in animate-duration-slow mt-6"
+    />
+  </div>
+</section>

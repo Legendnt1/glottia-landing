@@ -1,0 +1,11 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import MediaSection from "../components/sections/MediaSection.astro";
+import { useTranslations } from "../utils/i18n";
+
+const t = useTranslations("en");
+---
+
+<BaseLayout title={t.media.metaTitle} description={t.media.metaDescription}>
+  <MediaSection />
+</BaseLayout>

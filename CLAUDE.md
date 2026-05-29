@@ -64,11 +64,14 @@ Defined in `src/styles/global.css` using Tailwind v4 `@theme` + runtime CSS vari
 
 ```
 src/
-  styles/global.css        # @theme tokens, light/dark vars, base resets, .text-gradient-brand,
-                           # scroll-driven demo keyframes + .animate-app-* timeline utilities
+  styles/global.css        # @theme tokens (incl. fixed app-screen palette: cream/lime-soft/amber +
+                           # shadow-card-xs), light/dark vars, base resets, .text-gradient-brand,
+                           # single appScreenFade keyframe for the click-driven demo screens
   utils/i18n.ts            # EN/ES dictionaries (source of truth) + helpers
   layouts/BaseLayout.astro # <head> (SEO/OG/hreflang), theme bootstrap, ES auto-redirect,
                            # header (nav + lang switch + theme toggle), dark footer, slots
+  layouts/LegalLayout.astro# reader-optimized shell for legal docs (wraps BaseLayout);
+                           # renders a data-driven {title, updated, sections[]} document
   components/
     Icon.astro             # inline-SVG icon set (name -> path map)
     sections/
@@ -77,32 +80,50 @@ src/
       FeatureSection.astro # REUSABLE alternating feature block; prop: index (0..1)
       CtaBand.astro        # gradient call-to-action band
       DemoSection.astro    # /demo page body: intro copy + <DemoAppInterface/>
+      MediaSection.astro   # /media page body: intro + Product/Team/Testimonials/FAQ
+    media/                 # Media & Community page parts (data from i18n.media)
+      VideoFrame.astro     # reusable 16:9 frame: lazy <iframe> if embedUrl, else facade
+      ProductShowcase.astro# "See Glottia in Action" — video (L) + feature bullets (R)
+      TeamSection.astro    # team directory matrix (table) + team video below
+      Testimonials.astro   # learner/partner testimonial card grid (rating + chip)
+      FaqAccordion.astro   # native <details>/<summary> FAQ, SVG chevron, fade reveal
     mockups/               # presentational UI mockups (data from i18n)
       HeroAppPreview.astro # static app Home screen for the hero phone (greeting, FluencyScore, meetups)
       MeetupMockup.astro   # feature 1 — meetup card + floating level/points chips
       ProgressMockup.astro # feature 2 — FluencyScore ring, skill bars, weekly rank
     demo/
       MobileMockShell.astro   # pure CSS phone frame (bezel, notch, fixed cream screen)
-      DemoAppInterface.astro  # scroll-driven walkthrough: sticky phone + 4 screens
-                              # (Home → Meetup → Quiz → Ranking) animated via CSS
-                              # scroll timeline; step list + click-to-scroll nav
+      DemoAppInterface.astro  # click/tap-driven tabbed walkthrough: phone + 4 screens
+                              # (Home → Meetup → Quiz → Ranking) toggled instantly via
+                              # ARIA tabs (step list + bottom-nav + in-screen CTAs)
   pages/
     index.astro            # EN home  → Hero, PlatformIntro, 2× FeatureSection, CtaBand
     demo.astro             # EN demo
+    media.astro            # EN Media & Community (→ MediaSection)
+    legal/[slug].astro     # EN legal docs (privacy|terms|security) via getStaticPaths
     es/index.astro         # ES home (same composition)
     es/demo.astro          # ES demo
+    es/media.astro         # ES Media & Community
+    es/legal/[slug].astro  # ES legal docs (privacidad|terminos|seguridad)
 ```
+
+### Legal / policy pages (`/legal/<slug>`, `/es/legal/<slug>`)
+Footer Privacy/Terms/Security links resolve via `legalPath(doc, lang)`. Content lives in `i18n.ts` → `legal` (`{ backHome, updatedLabel, privacy, terms, security }`; each doc is `{ title, updated, sections: [{ heading, paragraphs[] }] }`). Routing is data-driven: `legalDocs` (the keys) + `legalSlugs` (per-locale URL slugs — EN `privacy/terms/security`, ES `privacidad/terminos/seguridad`). Both `[slug].astro` pages call `getStaticPaths()` to emit one static page per doc and pass the resolved doc object into `LegalLayout.astro`. `alternatePath()` is slug-aware, so the header language switch maps e.g. `/es/legal/privacidad` ↔ `/legal/privacy` correctly. No Markdown/MD deps — templates just `.map()` over sections and paragraphs.
+
+### Media & Community page (`/media`, `/es/media`)
+Linked from the header nav (`nav.community`). Standalone page composed by `sections/MediaSection.astro` from four parts under `components/media/`, all data-driven from `i18n.ts` → `media`: (1) **ProductShowcase** "See Glottia in Action" — 2-col video + feature bullets; (2) **TeamSection** — a contributor matrix `<table>` plus a team video below it; (3) **Testimonials** — learner/partner card grid with star ratings and classification chips; (4) **FaqAccordion** — native `<details>/<summary>` accordion with an inline-SVG chevron and a compositor-only (opacity+transform) reveal, no layout thrashing. Videos use `media/VideoFrame.astro`: it renders a lazy `<iframe>` when an `embedUrl` is set in `i18n`, otherwise a dependency-free facade placeholder (play button) — the 16:9 ratio is always reserved to avoid CLS. New icons `play`/`chevron` were added to `Icon.astro`.
 
 ### Homepage flow (current, post-redesign)
 `HeroSection → PlatformIntro → FeatureSection(0 meetups) → FeatureSection(1 progress/gamification, reversed) → CtaBand`. The footer comes from `BaseLayout`.
 
 > Note: the old **"5W + 2H" `ProblemSolutionSection`** and `MVPSection` were removed earlier. The landing was then re-aligned to the real Figma product: the demo is the learner journey (Home → Meetup → Quiz → Ranking), and the second feature is **progress & gamification** (FluencyScore, quizzes, streaks, ranking) — the previously-invented "café/merchant dashboard" was dropped because the product has no merchant side. Keep copy faithful to the app (meetups, FluencyScore, Madrid/Café Central, CEFR levels — not bookings/PEN/Lima).
 
-### Demo (scroll-driven, `DemoAppInterface.astro`)
-- **Continuous scroll animation, CSS-only.** Four app screens are stacked absolutely inside the pinned (`sticky`) phone and bound to a CSS **`view-timeline`** named `--mobileDemoTimeline`. The timeline is defined on the `.demo-scroll-foundation` (four `h-screen` spacers) and hoisted to the screens via `timeline-scope` on the `.demo-timeline-track` section, so the mouse wheel drives screen states fluidly. Keyframes/utilities live in `global.css` (`appScreenHome/Meetup/Quiz/Ranking`, `.animate-app-*`).
-- **Fallback:** `@supports not (animation-timeline: view())` (Safari/Firefox) reveals the active screen via a JS-maintained `[data-active]` attribute on the track.
-- **JS is sync-only, not scroll-jacking:** an `IntersectionObserver` on the spacers keeps the step list / dots / phone chrome (`data-screen-title`, bottom-nav) in sync, and `[data-jump]` elements (step cards, bottom-nav tabs, in-screen CTAs) `scrollIntoView({behavior:'smooth'})` the matching spacer. The quiz answer interaction is independent vanilla JS.
-- Reserve `scroll-timeline`/`animation-timeline` for this demo; don't sprinkle scroll-driven animations elsewhere (use `view-animate-*` from tailwind-animations for simple reveals).
+### Demo (click/tap-driven tabs, `DemoAppInterface.astro`)
+- **No scroll timeline.** The previous `view-timeline`/`scroll-timeline` machinery (pinned sticky phone, `.demo-scroll-foundation` `h-screen` spacers, `.demo-timeline-track`, `appScreenHome/Meetup/Quiz/Ranking` keyframes, `IntersectionObserver`, `scrollIntoView`) was removed for a lighter, faster interface. The section is now a normal centered block: a desktop two-column grid (step list + phone) that collapses to a single compact column on mobile with the phone as the primary element.
+- **Tabbed screens.** Four app screens are absolutely stacked inside the phone's screen stage. Only the active screen is in the DOM/a11y tree — JS toggles the `hidden` attribute on the others. Revealing a screen plays one lightweight, compositor-only `appScreenFade` (opacity + scale) defined in `global.css` — zero layout/paint cost.
+- **Accessibility:** screens are `role="tabpanel"`; the bottom-nav is a `role="tablist"` of `role="tab"` buttons (the desktop step list is a second vertical tablist). `aria-selected` is kept in sync in JS, and every interactive control has a `focus-visible:ring-2`.
+- **JS (vanilla, click-driven):** every `[data-jump]` element (step tabs, bottom-nav tabs, in-screen CTAs like the home meetup card / join / quiz-next) calls `setActive(i)`, which toggles panel `hidden`, syncs `aria-selected`, and updates the step list / dots / phone chrome (`data-screen-title`). The quiz answer interaction is independent vanilla JS.
+- Don't reintroduce scroll-driven animations; for simple reveals elsewhere use `view-animate-*` from tailwind-animations.
 
 ---
 

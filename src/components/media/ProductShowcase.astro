@@ -1,0 +1,61 @@
+---
+import { getLangFromUrl, useTranslations } from "../../utils/i18n";
+import VideoFrame from "./VideoFrame.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const p = t.media.product;
+---
+
+<section id="product-tour" class="scroll-mt-24 px-5 py-16 md:px-8 md:py-20">
+  <div class="mx-auto max-w-2xl text-center">
+    <span class="text-xs font-bold uppercase tracking-[0.2em] text-accent">
+      {p.eyebrow}
+    </span>
+    <h2
+      class="view-animate-fade-in-up animate-duration-slow mt-4 text-balance text-3xl font-extrabold leading-[1.1] tracking-tight text-heading md:text-4xl"
+    >
+      {p.title}
+    </h2>
+    <p
+      class="view-animate-fade-in-up animate-delay-150 animate-duration-slow mx-auto mt-4 max-w-xl text-pretty text-base text-body md:text-lg"
+    >
+      {p.subtitle}
+    </p>
+  </div>
+
+  <div
+    class="mx-auto mt-12 grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-14"
+  >
+    <!-- Left · video -->
+    <VideoFrame
+      title={p.video.title}
+      embedUrl={p.video.embedUrl}
+      watchUrl={p.video.watchUrl}
+      class="view-animate-fade-in animate-duration-slow"
+    />
+
+    <!-- Right · feature breakdown -->
+    <div>
+      <h3 class="text-xl font-extrabold text-heading md:text-2xl">
+        {p.featuresTitle}
+      </h3>
+      <ul class="mt-6 space-y-4">
+        {
+          p.features.map((feat) => (
+            <li class="flex items-start gap-3">
+              <span class="mt-2 size-2 shrink-0 rounded-full bg-primary" />
+              <span class="text-sm text-body md:text-base">
+                <span class="font-bold text-heading">{feat.title}:</span>{" "}
+                {feat.desc}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-7 max-w-md text-sm font-semibold text-heading md:text-base">
+        {p.footnote}
+      </p>
+    </div>
+  </div>
+</section>
